@@ -1,0 +1,48 @@
+import plotly.graph_objs as go
+import plotly.express as px
+import pandas as pd
+
+# Dados fornecidos
+data = {
+    "Título do Filme": ["Argyle", "Os Escolhidos", "O Apicultor", "Lisa Frankenstein", "Ninguém além de você"],
+    "Distribuidor": ["Universal", "Eventos abrangentes", "Amazon MGM", "Recursos de foco", "Imagens da Sony"],
+    "Bruto": [584695, 440592, 353861, 316875, 285259],
+    "Dias de Lançamento": [11, 12, 32, 4, 53]
+}
+
+df = pd.DataFrame(data)
+
+# Calculando o total bruto
+total_bruto = df['Bruto'].sum()
+
+# Encontrando o distribuidor que mais faturou
+distribuidor_mais_faturou = df.groupby('Distribuidor')['Bruto'].sum().idxmax()
+
+# Calculando a diferença de valores em relação aos dias de lançamento
+df['Diferença'] = df['Bruto'] / df['Dias de Lançamento']
+
+# Criando gráfico de barras para valores brutos
+fig1 = px.bar(df, x='Título do Filme', y='Bruto', title='Valores Brutos dos Filmes')
+fig1.update_layout(xaxis_title='Título do Filme', yaxis_title='Valores Brutos (em dólares)')
+
+# Criando gráfico de pizza para participação dos distribuidores no faturamento total
+fig2 = px.pie(df, names='Distribuidor', values='Bruto', title='Participação dos Distribuidores no Faturamento Total')
+
+# Criando tabela para diferença de valores em relação aos dias de lançamento
+fig3 = go.Figure(data=[go.Table(
+    header=dict(values=['Título do Filme', 'Diferença (em dólares por dia)'],
+                fill_color='rgb(0, 153, 255)',
+                align='left'),
+    cells=dict(values=[df['Título do Filme'], df['Diferença']],
+               fill_color='rgb(255, 255, 255)',
+               align='left'))
+])
+fig3.update_layout(title='Diferença de Valores em Relação aos Dias de Lançamento')
+
+# Exibindo o dashboard
+fig1.show()
+fig2.show()
+fig3.show()
+
+print("Total Bruto: ${}".format(total_bruto))
+print("Distribuidor que mais faturou: {}".format(distribuidor_mais_faturou))
